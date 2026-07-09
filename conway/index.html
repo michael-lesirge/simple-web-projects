@@ -106,7 +106,7 @@
                     </div>
                     <div class="setting" title="How long the trail of boids should be. 0 means no trail.">
                         <label for="boids-trail">Trail</label>
-                        <input type="range" id="boids-trail" name="boids-trail" min="0" max="25">
+                        <input type="range" id="boids-trail" name="boids-trail" min="0" max="100">
                         <span id="boids-trail-value">-</span>
                     </div>
                     <div class="setting" title="Size of boid">
@@ -162,7 +162,7 @@
                 </from>
                 <div class="buttons">
                     <button id="pause-btn" class="button" style="background-color: #f0ad4e;" title="Set FPS to 0">⏸Pause</button>
-                    <button id="fps-btn" class="button" style="background-color: #28a745;" title="Set FPS to 60">Default FPS</button>
+                    <button id="fps-btn" class="button" style="background-color: #28a745;" title="Set FPS to 60">Reset</button>
                     <div>
                         FPS
                         <input type="text" id="real-fps" readonly max="90" min="0" value="60" style="width: 3rem;">

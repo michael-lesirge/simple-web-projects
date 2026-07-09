@@ -392,6 +392,8 @@ const maxBias = 0.01;
 const biasIncrement = 0.00004;
 const defaultBiasVal = 0.001;
 
+const trailInterval = 5;
+
 const boidsCount = Math.floor(canvas.width * canvas.height / 10000);
 
 function makeSettings(prefix, values, func = (value) => value, textFunc = (value) => value) {
@@ -432,7 +434,7 @@ const boidMovementSettings = makeSettings("boids", {
 const boidSettings = makeSettings("boids", {
     "count": boidsCount,
     "trail": 0,
-}, (value) => Math.floor(value), (value) => Math.floor(value));
+ }, (value) => Math.floor(value), (value) => Math.floor(value));
 
 addSettings(boidSettings, "boids", {
     "scale": 100,
@@ -555,10 +557,31 @@ class Boid {
 
         // Trail
         this.trailI++;
-        this.trail.push({ x: this.x, y: this.y, hsl: this.hsl });
+        if (this.trailI % trailInterval === 0) {
+            this.trail.push({ x: this.x, y: this.y, hsl: this.hsl });
+        }
     }
 
     draw() {
+
+        while (this.trail.length > boidSettings["trail"].get() / trailInterval) {
+            this.trail.shift();
+        }
+        for (let i = 1; i <= this.trail.length; i++) {
+            const element = this.trail[i] ?? { x: this.x, y: this.y };
+            const lastElement = this.trail[i - 1];
+
+            ctx.save()
+            ctx.fillStyle = hslToCss(lastElement.hsl);
+
+            ctx.globalAlpha = i / this.trail.length;
+            ctx.beginPath();
+            ctx.moveTo(element.x, element.y);
+            ctx.lineTo(lastElement.x, lastElement.y);
+            ctx.stroke();
+            ctx.restore();
+        }
+
         const angle = Math.atan2(this.vy, this.vx);
 
         ctx.save();
@@ -582,24 +605,6 @@ class Boid {
         ctx.fill();
 
         ctx.restore();
-
-        while (this.trail.length > boidSettings["trail"].get()) {
-            this.trail.shift();
-        }
-        for (let i = 1; i < this.trail.length; i++) {
-            const element = this.trail[i];
-            const lastElement = this.trail[i - 1];
-
-            ctx.save()
-            ctx.fillStyle = hslToCss(lastElement.hsl);
-
-            ctx.globalAlpha = i / this.trail.length;
-            ctx.beginPath();
-            ctx.moveTo(element.x, element.y);
-            ctx.lineTo(lastElement.x, lastElement.y);
-            ctx.stroke();
-            ctx.restore();
-        }
     }
 }
 
